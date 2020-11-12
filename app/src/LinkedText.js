@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import * as d3 from 'd3';
-
+/*
 class LinkedText extends Component {
     constructor(props) {
         super(props);
@@ -148,3 +148,4 @@ class LinkedText extends Component {
 }
 
 export default BubbleChart
+*/
