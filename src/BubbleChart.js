@@ -1,13 +1,25 @@
 import React, { Component } from 'react'
+import LinkedText from './LinkedText'
 import * as d3 from 'd3';
 
 class BubbleChart extends Component {
     constructor(props) {
         super(props);
         this.createBubbleChart = this.createBubbleChart.bind(this);
+        this.setFocus = this.setFocus.bind(this);
         this.emphasisObjects = new Set();
-        this.timeRange = [1800, 2009];
+        this.defaulttimeRange = [1800, 2009];
+        this.timeRange = this.defaulttimeRange;
         this.emphasisObjects.add("United States");
+    }
+
+    setFocus(timeRange, emphasisObjects){
+        if(timeRange === null || timeRange === undefined){
+            this.timeRange = this.defaulttimeRange;
+        }else{
+            this.timeRange = timeRange;
+        }
+        this.emphasisObjects =　new Set(emphasisObjects);
     }
 
     componentDidMount() {
@@ -23,7 +35,7 @@ class BubbleChart extends Component {
         let width = 1000,
             height = 500,
             margin = ({top: 20, right: 20, bottom: 35, left: 40}),
-            interval = 100; 
+            interval = 200; 
         var x = d3.scaleLog([200, 1e5], [margin.left, width - margin.right]), 
             y = d3.scaleLinear([14, 86], [height - margin.bottom, margin.top]),
             radius = d3.scaleSqrt([0, 5e8], [0, width / 24]),
@@ -37,10 +49,11 @@ class BubbleChart extends Component {
 
         _self.props.data_load.then(function (dataset) {
             // 図の初期化
+            _self.dataset = dataset;
             timeSlider.attr('min', _self.timeRange[0]).attr('max', _self.timeRange[1]).attr('value', _self.timeRange[0])
             svg.append("g").attr("stroke", "black")
                            .selectAll("circle")
-                           .data(dataAt(dataset, _self.timeRange[0]), d => d.name)
+                           .data(dataAt(_self.timeRange[0]), d => d.name)
                            .join("circle")
                            .sort((a, b) => d3.descending(a.population, b.population))
                            .attr("cx", d => x(d.income))
@@ -50,28 +63,26 @@ class BubbleChart extends Component {
                            .call(circle => circle.append("title")
                            .text(d => [d.name, d.region].join("\n")));
 
-            timeSlider.on("change", function() {
-                var currentTime = this.value;
-                update(dataset, currentTime)
-            });
-            function step(){
-                var currentTime = Number(timeSlider.attr('value'));
-                if (currentTime >= _self.timeRange[1] || currentTime < _self.timeRange[0]){
-                    timeSlider.attr("value", _self.timeRange[0]);
-                    update(dataset, _self.timeRange[0]);
-                } else{
-                    timeSlider.attr("value", currentTime+1);
-                    update(dataset, currentTime+1)
-                }
-            }
-            setInterval(step, interval)
             renderAxes(svg)
         });
+        timeSlider.on("change", function() {
+            update(this.value)
+        });
+        function step(){
+            const currentTime = Number(timeSlider.property('value'));
+            if (currentTime >= _self.timeRange[1] || currentTime < _self.timeRange[0]){
+                timeSlider.property('value', _self.timeRange[0]);
+                update(_self.timeRange[0]);
+            } else{
+                timeSlider.property('value', currentTime+1);
+                update(currentTime+1)
+            }
+        }
+        setInterval(step, interval)
 
-
-        function update(dataset, year){
+        function update(year){
             const circles = svg.selectAll('circle')
-            circles.data(dataAt(dataset, year), d => d.name)
+            circles.data(dataAt(year), d => d.name)
                     .sort((a, b) => d3.descending(a.population, b.population))
                     .transition().duration(interval)
                     .attr("cx", d => x(d.income))
@@ -80,8 +91,8 @@ class BubbleChart extends Component {
                     .attr("fill", d => color(d.name))
         }
 
-        function dataAt(dataset, year) {
-            return dataset.map(d => ({
+        function dataAt(year) {
+            return _self.dataset.map(d => ({
               name: d.name,
               region: d.region,
               income: valueAt(d.income, year),
@@ -138,10 +149,11 @@ class BubbleChart extends Component {
     render() {
         return <div>
         <div>
-            <input id="timeSlider" type="range" min="1" max="20" step="1" defaultvalue="10"/>
+            <input id="timeSlider" type="range"/>
         </div>
         <div>
             <svg ref={node => this.node = node}/>
+            <LinkedText reportData={this.props.reportData} setFocus={this.setFocus}/>
         </div>
         </div>
     }

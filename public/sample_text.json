@@ -1,0 +1,7 @@
+[
+    {"text": "America 1800~1820", "focusArgs": [[1800, 1820], ["United States"]]},
+    {"text": " no focus ", "focusArgs": null},
+    {"text": " 1900~2000 ", "focusArgs": [[1900, 2000], null]},
+    {"text": " Japan ", "focusArgs": [null, ["Japan"]]},
+    {"text": "Japan 1990~2000", "focusArgs": [[1990, 2000], ["Japan"]]}
+]

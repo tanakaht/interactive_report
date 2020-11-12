@@ -9,11 +9,12 @@ class App extends Component {
     super(props)
   }
   render() {
-    const data_load = d3.json("./nations.json") // d3.json
+    const data_load = d3.json("./nations.json"),
+    reportData = d3.json("./sample_text.json");
     return (
       <div>
         <h2>React D3.js Bubble chart</h2>
-        <BubbleChart data_load={data_load} />
+        <BubbleChart data_load={data_load} reportData={reportData}/>
       </div>
     )
   }
