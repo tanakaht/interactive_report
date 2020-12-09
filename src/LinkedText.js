@@ -20,8 +20,12 @@ class LinkedText extends Component {
     createLinkedText() {
         const _self = this;
         _self.props.reportData.then(function (reports) {
+            let cnt=0
             for(let report of reports){
+                cnt++
+                if (cnt>1000){break}
                 const rep = document.createElement('span');
+                console.log(report)
                 rep.append(document.createTextNode(report.text));
                 rep.className = 'nonselected'
                 rep.addEventListener("mouseenter", (event) => {   
@@ -36,6 +40,7 @@ class LinkedText extends Component {
                     rep.className = 'nonselected'
                     }, false);
                   _self.divRef.current.appendChild(rep);
+                rep.append(document.createElement("br"));
             }
         });
     }

@@ -10,7 +10,8 @@ class App extends Component {
   }
   render() {
     const data_load = d3.json("./nations.json"),
-    reportData = d3.json("./sample_text.json");
+    reportData = d3.json("./nations_change.json");
+
     return (
       <div>
         <h2>React D3.js Bubble chart</h2>

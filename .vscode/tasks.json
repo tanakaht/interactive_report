@@ -1,0 +1,49 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "test_atcoder_sample",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "type": "shell",
+      "command": "${workspaceFolder}/cptest.sh",
+      "args": [
+        "${fileBasenameNoExtension}"
+      ]
+    },
+    {
+      "label": "stress_test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "type": "shell",
+      "command": "${workspaceFolder}/stress_test.sh",
+      "args": [
+        "${fileBasenameNoExtension}"
+      ]
+    },
+    {
+      "label": "stress_test_reset",
+      "group": "test",
+      "type": "shell",
+      "command": "${workspaceFolder}/stress_test_reset.sh",
+      "args": [
+        "${fileBasenameNoExtension}"
+      ]
+    },
+    {
+      "label": "stress_test_no_naive",
+      "group": "test",
+      "type": "shell",
+      "command": "${workspaceFolder}/stress_test_no_naive.sh",
+      "args": [
+        "${fileBasenameNoExtension}"
+      ]
+    }
+  ]
+}
