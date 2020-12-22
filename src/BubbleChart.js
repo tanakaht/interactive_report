@@ -1,5 +1,5 @@
+import "./BubbleChart.css";
 import React, { Component } from 'react'
-import LinkedText from './LinkedText'
 import * as d3 from 'd3';
 
 class BubbleChart extends Component {
@@ -10,7 +10,7 @@ class BubbleChart extends Component {
         this.emphasisObjects = new Set();
         this.defaulttimeRange = [1800, 2009];
         this.timeRange = this.defaulttimeRange;
-        this.emphasisObjects.add("United States");
+        //this.emphasisObjects.add("United States");
     }
 
     setFocus(timeRange, emphasisObjects){
@@ -35,14 +35,18 @@ class BubbleChart extends Component {
         let width = 1000,
             height = 500,
             margin = ({top: 20, right: 20, bottom: 35, left: 40}),
-            interval = 200; 
+            interval = 400; 
+        let svg = d3.select(node);
+        let timeSlider = d3.select('#timeSlider');
         var x = d3.scaleLog([200, 1e5], [margin.left, width - margin.right]), 
             y = d3.scaleLinear([14, 86], [height - margin.bottom, margin.top]),
             radius = d3.scaleSqrt([0, 5e8], [0, width / 24]),
-            color = d => _self.emphasisObjects.has(d)?"red":"black";
+            year_label = svg.append("text").attr("class", "year label")
+                                    .attr("text-anchor", "end")
+                                    .attr("y", height - height/8)
+                                    .attr("x", width)
+                                    .text(_self.defaulttimeRange[0]);
 
-        let svg = d3.select(node);
-        let timeSlider = d3.select('#timeSlider');
 
         svg.attr("height", height)
             .attr("width", width);
@@ -59,7 +63,7 @@ class BubbleChart extends Component {
                            .attr("cx", d => x(d.income))
                            .attr("cy", d => y(d.lifeExpectancy))
                            .attr("r", d => radius(d.population))
-                           .attr("fill", d => color(d.name))
+                           .attr("fill", "rgba(0, 0, 0, 0.5)")
                            .call(circle => circle.append("title")
                            .text(d => [d.name, d.region].join("\n")));
 
@@ -81,14 +85,16 @@ class BubbleChart extends Component {
         setInterval(step, interval)
 
         function update(year){
-            const circles = svg.selectAll('circle')
+            const circles = svg.selectAll('circle'),
+            texts = svg.selectAll('text')
             circles.data(dataAt(year), d => d.name)
                     .sort((a, b) => d3.descending(a.population, b.population))
                     .transition().duration(interval)
                     .attr("cx", d => x(d.income))
                     .attr("cy", d => y(d.lifeExpectancy))
                     .attr("r", d => radius(d.population))
-                    .attr("fill", d => color(d.name))
+                    .attr("class", d => _self.emphasisObjects.has(d.name)?"circle emphasis":"circle")
+            year_label.text(year)
         }
 
         function dataAt(year) {
@@ -148,13 +154,8 @@ class BubbleChart extends Component {
 
     render() {
         return <div>
-        <div>
-            <input id="timeSlider" type="range"/>
-        </div>
-        <div>
             <svg ref={node => this.node = node}/>
-            <LinkedText reportData={this.props.reportData} setFocus={this.setFocus}/>
-        </div>
+            <input id="timeSlider" type="range"/>
         </div>
     }
 }

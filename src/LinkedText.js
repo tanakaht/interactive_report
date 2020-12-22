@@ -7,6 +7,7 @@ class LinkedText extends Component {
     constructor(props) {
         super(props);
         this.createLinkedText = this.createLinkedText.bind(this);
+        this.update_text = this.update_text.bind(this);
         this.divRef = React.createRef();
     }
 
@@ -17,15 +18,18 @@ class LinkedText extends Component {
         this.createLinkedText()
     }
 
-    createLinkedText() {
+    update_text(data) {
         const _self = this;
-        _self.props.reportData.then(function (reports) {
+        console.log(_self.divRef.current)
+        while(_self.divRef.current.lastChild){
+            _self.divRef.current.removeChild(_self.divRef.current.lastChild);
+          }          
+        data.then(response => response.json()).then(function (json) {
             let cnt=0
-            for(let report of reports){
+            for(let report of json.result){
                 cnt++
                 if (cnt>1000){break}
                 const rep = document.createElement('span');
-                console.log(report)
                 rep.append(document.createTextNode(report.text));
                 rep.className = 'nonselected'
                 rep.addEventListener("mouseenter", (event) => {   
@@ -39,10 +43,18 @@ class LinkedText extends Component {
                     _self.props.setFocus();
                     rep.className = 'nonselected'
                     }, false);
-                  _self.divRef.current.appendChild(rep);
+                rep.addEventListener("click", (event) => {   
+                    _self.props.setDatafact(report);
+                    }, false);
+                _self.divRef.current.appendChild(rep);
                 rep.append(document.createElement("br"));
             }
         });
+    }
+
+    createLinkedText() {
+        const _self = this;
+        _self.update_text(_self.props.init_data)
     }
 
     render() {

@@ -1,0 +1,12 @@
+.year.label {
+  font: 500 196px "Helvetica Neue";
+  fill: #ddd;
+}
+
+.circle.emphasis {
+  fill: #ff0000;
+}
+
+#timeSlider{
+  width: 1000px
+}
